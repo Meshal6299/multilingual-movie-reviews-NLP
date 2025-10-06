@@ -1,5 +1,0 @@
-In order to reproduce the sample dataset. 
-
-1- You need to open the two notebooks located in notebooks folder and click open in colab. 
-2- You need to upload the original 50k English and 50k Spanish datasets in your google drive
-3- run the notebooks for each language
