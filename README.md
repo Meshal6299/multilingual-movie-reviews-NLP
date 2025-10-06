@@ -25,23 +25,19 @@ The project is modular, fully reproducible, and runs on a small sampled dataset 
 
 ## 🧩 Folder Structure
 
-multilingual-movie-reviews-nlp/
-│
-├── data/
-│ ├── raw/
-| | ├── sampleChecker.py # check for even distribution in the datasets
-│ │ ├── sampled_imdb_en.csv # English dataset
-│ │ └── sampled_imdb_es.csv # Spanish dataset
-│ └── processed/ # Cleaned and tokenized data
-│
-├── notebooks/
-│ ├── sampleGenerator_en.ipynb # English dataset generation
-│ ├── sampleGenerator_es.ipynb # Spanish dataset generation
-│
-├── src/
-│
-├── .venv/ # Virtual environment (local only)
-├── requirements.txt # Dependencies
-├── run_pipeline.py # Main entry point
-├── .gitignore
-└── README.md
+```
+├── data
+│   ├── processed
+│   └── raw
+│       ├── sampleChecker.py
+│       ├── sampled_imdb_en.csv
+│       └── sampled_imdb_es.csv
+├── notebooks
+│   ├── sampleGenerator_en.ipynb
+│   └── sampleGenerator_es.ipynb
+├── README.md
+├── requirements.txt
+├── run_pipeline.py
+└── src
+```
+
