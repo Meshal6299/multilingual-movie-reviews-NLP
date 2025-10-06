@@ -7,12 +7,14 @@ follow the following steps:-
 1. go to notebooks folder
 2. choose either sampleGenerator_en or sampleGenerator_es
 3. click on "Open in Colab"
-4. upload the original csv files for both English and Spanish to your google drive
-5. make sure to change the file path in the 4th block with your actual file path
-6. run each block inorder
+4. upload the original csv files for either English and Spanish based on 
+   your chosen notebook to your google drive
+5. make sure to change the file path in the 4th block with your actual 
+   file path from your google drive
+6. run all blocks
 
-this should generate a small sample containing a total of 2000 movie reviews distributed evenly
+this should generate a csv file with a small sample containing a total of 2000 movie reviews distributed evenly
 between positives and negatives
 
-you can the distribution with the python script in smapleChecker.py.
+you can cehck the distribution with the python script in sampleChecker.py
 This will check both English and Spanish
