@@ -26,18 +26,20 @@ The project is modular, fully reproducible, and runs on a small sampled dataset 
 ## 🧩 Folder Structure
 
 ```
-├── data
-│   ├── processed
-│   └── raw
-│       ├── sampleChecker.py
-│       ├── sampled_imdb_en.csv
-│       └── sampled_imdb_es.csv
-├── notebooks
-│   ├── sampleGenerator_en.ipynb
-│   └── sampleGenerator_es.ipynb
+├── .venv/ # Virtual environment (local only)
+├── data/
+│   ├── processed/
+│   └── raw/
+│       ├── sampleChecker.py # checker for even distribution of positives and negatives
+│       ├── sampled_imdb_en.csv # English dataset
+│       └── sampled_imdb_es.csv # Spanish dataset
+├── notebooks/
+│   ├── sampleGenerator_en.ipynb # English dataset generation
+│   └── sampleGenerator_es.ipynb # Spanish dataset generation
+├── src/
+├── .gitignore
 ├── README.md
-├── requirements.txt
-├── run_pipeline.py
-└── src
+├── requirements.txt # Dependencies
+└── run_pipeline.py # Main enrty point
 ```
 
