@@ -7,4 +7,4 @@ print("\n")
 print("Checking Spanish sampled data balance...")
 
 df_es = pd.read_csv("data/raw/sampled_imdb_es.csv")
-print(df_es['sentimiento'].value_counts())
+print(df_es['sentiment'].value_counts())
