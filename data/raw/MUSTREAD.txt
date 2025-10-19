@@ -16,5 +16,5 @@ follow the following steps:-
 this should generate a csv file with a small sample containing a total of 2000 movie reviews distributed evenly
 between positives and negatives
 
-you can cehck the distribution with the python script in sampleChecker.py
+you can check the distribution with the script in sampleChecker.ipynb in notebooks folder
 This will check both English and Spanish
