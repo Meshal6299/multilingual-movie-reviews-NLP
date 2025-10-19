@@ -42,4 +42,18 @@ The project is modular, fully reproducible, and runs on a small sampled dataset 
 ├── requirements.txt # Dependencies
 └── run_pipeline.py # Main enrty point
 ```
+---
 
+## 📚 Dataset Information
+
+The original datasets are sourced from **Kaggle** and have been legally sampled for academic use:
+
+1. **English Dataset:**  
+   *IMDB Dataset of 50K Movie Reviews* — includes labeled positive and negative reviews.  
+   🔗 https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews/data
+
+2. **Spanish Dataset:**  
+   *IMDB Dataset of 50K Movie Reviews (Spanish Translation)* — machine-translated and labeled for sentiment.  
+   🔗 https://www.kaggle.com/datasets/luisdiegofv97/imdb-dataset-of-50k-movie-reviews-spanish/data
+
+Each dataset was reduced to **1,000 randomly sampled reviews per language** to ensure balanced sentiment distribution and faster model training.
