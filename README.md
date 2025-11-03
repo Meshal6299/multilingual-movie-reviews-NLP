@@ -6,7 +6,7 @@ This project builds an end-to-end **Natural Language Processing (NLP) pipeline**
 - Named Entity Recognition (NER)  
 - Sentiment Analysis (Positive/Negative Classification)
 
-The project is modular, fully reproducible, and runs on a small sampled dataset (2K reviews total).
+The project is modular, fully reproducible, and runs on a small sampled dataset (20K reviews total).
 
 ---
 
@@ -15,9 +15,9 @@ The project is modular, fully reproducible, and runs on a small sampled dataset 
 | Component | Description |
 |------------|--------------|
 | **Languages** | English 🇬🇧 & Spanish 🇪🇸 |
-| **Dataset** | 1K English + 1K Spanish movie reviews (balanced positive/negative) |
-| **Goal** | Detect sentiment and extract named entities |
-| **Libraries Used** | `pandas`, `spaCy`, `nltk`, `scikit-learn`, `matplotlib`, `seaborn` |
+| **Dataset** | 10K English + 10K Spanish movie reviews (balanced positive/negative) |
+| **Goal** | Implement end-to-end NLP pipeline, Detect sentiment and extract named entities |
+| **Libraries Used** | `pandas`, `spaCy`, `nltk`, `scikit-learn`, `matplotlib`, `seaborn`, `tqdm`, `contractions`, `math`, `re`, `ngrams`, `displacy`, `counter` |
 | **Pipeline Entry** | `run_pipeline.py` |
 | **Environment** | Python Virtual Environment (`.venv`) |
 
@@ -29,14 +29,28 @@ The project is modular, fully reproducible, and runs on a small sampled dataset 
 ├── .venv/ # Virtual environment (local only)
 ├── data/
 │   ├── processed/
+│   │   ├── 01_cleaned_imdb_en.csv
+│   │   ├── 01_cleaned_imdb_es.csv
+│   │   ├── 02_tokenized_pos_imdb_en.csv
+│   │   └── 02_tokenized_pos_imdb_es.csv
 │   └── raw/
-│       ├── sampleChecker.py # checker for even distribution of positives and negatives
-│       ├── sampled_imdb_en.csv # English dataset
-│       └── sampled_imdb_es.csv # Spanish dataset
+│       ├── MUSTREAD.txt
+│       ├── sampled_imdb_en.csv
+│       └── sampled_imdb_es.csv
 ├── notebooks/
-│   ├── sampleGenerator_en.ipynb # English dataset generation
-│   └── sampleGenerator_es.ipynb # Spanish dataset generation
+│   ├── 01_data_cleaning_eda.ipynb
+│   ├── 02_tokenization_ngram_pos.ipynb
+│   ├── sampleChecker.ipynb
+│   ├── sampleGenerator_en.ipynb
+│   └── sampleGenerator_es.ipynb
+├── outputs/
+│   ├── TEST_cleaned_imdb_en.csv
+│   ├── TEST_cleaned_imdb_es.csv
+│   ├── TEST_tokenized_pos_en.csv
+│   └── TEST_tokenized_pos_es.csv
 ├── src/
+│   ├── dependency.html
+│   └── nlp_utils.py
 ├── .gitignore
 ├── README.md
 ├── requirements.txt # Dependencies
@@ -57,3 +71,47 @@ The original datasets are sourced from **Kaggle** and have been legally sampled 
    🔗 https://www.kaggle.com/datasets/luisdiegofv97/imdb-dataset-of-50k-movie-reviews-spanish/data
 
 Each dataset was reduced to **1,000 randomly sampled reviews per language** to ensure balanced sentiment distribution and faster model training.
+
+
+## 🚀 How to Run the Project
+
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/Meshal6299/multilingual-movie-reviews-NLP.git
+
+cd multilingual-movie-reviews-NLP
+```
+
+### 2️⃣ Create and Activate a Virtual Environment
+```bash
+python -m venv .venv
+
+# 🪟 Windows
+.venv\Scripts\activate
+# 🐧 macOS / Linux
+source .venv/bin/activate
+```
+
+### 3️⃣ Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4️⃣ Download spaCy Models
+```bash
+python -m spacy download en_core_web_sm
+python -m spacy download es_core_news_sm
+```
+
+### 5️⃣ Run the Full NLP Pipeline  
+```bash
+python run_pipeline.py
+```
+
+**This will automatically:**
+1. Clean and normalize raw data 
+2. Tokenize English & Spanish reviews
+3. Build N-gram models and calculate perplexity
+4. Apply POS tagging
+
+All outputs are saved under `outputs/`.
