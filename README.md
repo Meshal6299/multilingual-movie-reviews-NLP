@@ -26,7 +26,7 @@ The project is modular, fully reproducible, and runs on a small sampled dataset 
 ## 🧩 Folder Structure
 
 ```
-├── .venv/ # Virtual environment (local only)
+├── .venv/
 ├── data/
 │   ├── processed/
 │   │   ├── 01_cleaned_imdb_en.csv
@@ -53,8 +53,8 @@ The project is modular, fully reproducible, and runs on a small sampled dataset 
 │   └── nlp_utils.py
 ├── .gitignore
 ├── README.md
-├── requirements.txt # Dependencies
-└── run_pipeline.py # Main enrty point
+├── requirements.txt
+└── run_pipeline.py
 ```
 ---
 
@@ -70,7 +70,7 @@ The original datasets are sourced from **Kaggle** and have been legally sampled 
    *IMDB Dataset of 50K Movie Reviews (Spanish Translation)* — machine-translated and labeled for sentiment.  
    🔗 https://www.kaggle.com/datasets/luisdiegofv97/imdb-dataset-of-50k-movie-reviews-spanish/data
 
-Each dataset was reduced to **1,000 randomly sampled reviews per language** to ensure balanced sentiment distribution and faster model training.
+Each dataset was reduced to **10,000 randomly sampled reviews per language** to ensure balanced sentiment distribution and faster model training.
 
 
 ## 🚀 How to Run the Project
