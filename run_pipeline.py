@@ -90,6 +90,7 @@ print("✅ POS tagging complete for both datasets.\n")
 # =====================================================
 # 8️⃣ Save Final Outputs
 # =====================================================
-eng.to_csv("outputs/TEST_tokenized_pos_en.csv", index=False)
-spa.to_csv("outputs/TEST_tokenized_pos_es.csv", index=False)
+eng[["clean_text", "sentiment", "tokens", "pos_tags"]].to_csv("outputs/TEST_tokenized_pos_en.csv", index=False, encoding="utf-8")
+spa[["clean_text", "sentiment", "tokens", "pos_tags"]].to_csv("outputs/TEST_tokenized_pos_es.csv", index=False, encoding="utf-8")
+
 print("\n🎉 Full NLP pipeline executed successfully!")
