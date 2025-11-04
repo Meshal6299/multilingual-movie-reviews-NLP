@@ -97,13 +97,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4️⃣ Download spaCy Models
-```bash
-python -m spacy download en_core_web_sm
-python -m spacy download es_core_news_sm
-```
-
-### 5️⃣ Run the Full NLP Pipeline  
+### 4️⃣ Run the Full NLP Pipeline  
 ```bash
 python run_pipeline.py
 ```
