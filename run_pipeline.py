@@ -14,6 +14,8 @@ from src.nlp_utils import (
     calculate_perplexity,
     pos_tag_text,
     save_dependency_visualization,
+    extract_entities,
+    train_sentiment_classifier,
 )
 
 # Enable tqdm progress bar for pandas
@@ -54,6 +56,13 @@ print("✂️ Tokenizing reviews... (this may take several minutes)")
 eng["tokens"] = eng["clean_text"].progress_apply(lambda x: tokenize_text(nlp_en(x)))
 spa["tokens"] = spa["clean_text"].progress_apply(lambda x: tokenize_text(nlp_es(x)))
 
+eng[["tokens"]].to_csv(
+    "outputs/TEST_tokenized_en.csv", index=False, encoding="utf-8"
+)
+spa[["tokens"]].to_csv(
+    "outputs/TEST_tokenized_es.csv", index=False, encoding="utf-8"
+)
+
 print("✅ Tokenization complete for both datasets.\n")
 
 # =====================================================
@@ -85,12 +94,59 @@ print("🏷️ Applying POS tagging... (this may take several minutes)")
 eng["pos_tags"] = eng["clean_text"].progress_apply(lambda x: pos_tag_text(nlp_en(x)))
 spa["pos_tags"] = spa["clean_text"].progress_apply(lambda x: pos_tag_text(nlp_es(x)))
 
+eng[["pos_tags"]].to_csv(
+    "outputs/TEST_pos_en.csv", index=False, encoding="utf-8"
+)
+spa[["pos_tags"]].to_csv(
+    "outputs/TEST_pos_es.csv", index=False, encoding="utf-8"
+)
+
 print("✅ POS tagging complete for both datasets.\n")
 
 # =====================================================
-# 8️⃣ Save Final Outputs
+# 7️⃣ Named Entity Recognition (NER)
 # =====================================================
-eng[["clean_text", "sentiment", "tokens", "pos_tags"]].to_csv("outputs/TEST_tokenized_pos_en.csv", index=False, encoding="utf-8")
-spa[["clean_text", "sentiment", "tokens", "pos_tags"]].to_csv("outputs/TEST_tokenized_pos_es.csv", index=False, encoding="utf-8")
+print("🧠 Extracting NER entities (English + Spanish)...")
 
-print("\n🎉 Full NLP pipeline executed successfully!")
+eng["entities"] = eng["clean_text"].progress_apply(lambda x: extract_entities(nlp_en(x)))
+spa["entities"] = spa["clean_text"].progress_apply(lambda x: extract_entities(nlp_es(x)))
+
+eng[["entities"]].to_csv(
+    "outputs/TEST_ner_en.csv", index=False, encoding="utf-8"
+)
+spa[["entities"]].to_csv(
+    "outputs/TEST_ner_es.csv", index=False, encoding="utf-8"
+)
+
+print("✅ NER extraction complete.\n")
+
+# =====================================================
+# 8️⃣ Sentiment Classification (TF-IDF + Logistic Regression)
+# =====================================================
+print("❤️ Training sentiment classifiers (English + Spanish)...")
+
+# Train English model
+eng_model, eng_vec, report_en = train_sentiment_classifier(
+    eng["clean_text"], eng["sentiment"]
+)
+# Train Spanish model
+spa_model, spa_vec, report_es = train_sentiment_classifier(
+    spa["clean_text"], spa["sentiment"]
+)
+
+print("\n=== ENGLISH SENTIMENT CLASSIFICATION REPORT ===")
+print(report_en)
+
+print("\n=== SPANISH SENTIMENT CLASSIFICATION REPORT ===")
+print(report_es)
+
+# Save sentiment reports
+with open("outputs/TEST_sentiment_report_en.txt", "w") as f:
+    f.write(report_en)
+
+with open("outputs/TEST_sentiment_report_es.txt", "w") as f:
+    f.write(report_es)
+
+print("💾 Sentiment analysis reports saved.\n")
+
+print("🎉 Full NLP pipeline executed successfully!")

@@ -7,6 +7,8 @@ Utility functions for multilingual NLP pipeline:
 - N-gram modeling & perplexity
 - POS tagging
 - Dependency parsing visualization
+- Named Entity Recognition (NER)
+- Sentiment Classification (TF-IDF + Logistic Regression)
 """
 
 import re
@@ -16,6 +18,10 @@ import spacy
 from nltk import ngrams
 from collections import Counter
 from spacy import displacy
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 
 
 # =====================================================
@@ -87,3 +93,42 @@ def save_dependency_visualization(nlp_en, nlp_es, example_en, example_es, output
         f.write(html)
 
     print(f"✅ Dependency visualizations saved to {output_path}")
+
+
+# =====================================================
+# 🧠 NAMED ENTITY RECOGNITION
+# =====================================================
+def extract_entities(doc):
+    """Extracts named entities as (text, label) tuples."""
+    return [(ent.text, ent.label_) for ent in doc.ents]
+
+
+# =====================================================
+# ❤️ SENTIMENT CLASSIFICATION
+# =====================================================
+def train_sentiment_classifier(texts, labels):
+    """
+    Trains a Logistic Regression sentiment classifier using TF-IDF features.
+    Returns model, vectorizer, and classification report.
+    """
+    X_train, X_test, y_train, y_test = train_test_split(
+        texts, labels, test_size=0.20, random_state=42, stratify=labels
+    )
+
+    vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1, 2))
+    X_train_vec = vectorizer.fit_transform(X_train)
+    X_test_vec = vectorizer.transform(X_test)
+
+    model = LogisticRegression(max_iter=300)
+    model.fit(X_train_vec, y_train)
+
+    predictions = model.predict(X_test_vec)
+    report = classification_report(y_test, predictions)
+
+    return model, vectorizer, report
+
+
+def predict_sentiment(model, vectorizer, text: str):
+    """Predicts sentiment label for a single text input."""
+    x = vectorizer.transform([text])
+    return model.predict(x)[0]
