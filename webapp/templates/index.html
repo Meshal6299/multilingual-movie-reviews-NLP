@@ -1,0 +1,268 @@
+<!-- webapp/templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NLP Pipeline Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="shortcut icon" href="../static/nlp.png" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Multilingual Full NLP Pipeline</h1>
+      <p class="subtitle">English & Spanish — Cleaning · Tokenization · POS · NER · Sentiment · Evaluation</p>
+    </header>
+
+    <section class="controls">
+      <button id="startBtn" class="btn primary" onclick="startPipeline()">Start Pipeline</button>
+      <button id="stopBtn" class="btn danger" onclick="stopPipeline()" disabled>Cancel</button>
+      <div id="counterBox" class="counter">EN: 0/0 | ES: 0/0</div>
+      <span id="statusText" class="status">Status: Idle</span>
+    </section>
+
+    <section class="progress-section">
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill">0%</div>
+      </div>
+    </section>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <h3>CSV Previews</h3>
+          <button class="csv-btn" onclick="highlightCSV(this); loadPreview('clean_en')">Clean Text (English)</button>
+          <button class="csv-btn" onclick="highlightCSV(this); loadPreview('clean_es')">Clean Text (Spanish)</button>
+          <button class="csv-btn" onclick="highlightCSV(this); loadPreview('tokens_en')">Tokens (English)</button>
+          <button class="csv-btn" onclick="highlightCSV(this); loadPreview('tokens_es')">Tokens (Spanish)</button>
+          <button class="csv-btn" onclick="highlightCSV(this); loadPreview('pos_en')">Part of Speech tagging (English)</button>
+          <button class="csv-btn" onclick="highlightCSV(this); loadPreview('pos_es')">Part of Speech tagging (Spanish)</button>
+          <button class="csv-btn" onclick="highlightCSV(this); loadPreview('ner_en')">Named Entities (English)</button>
+          <button class="csv-btn" onclick="highlightCSV(this); loadPreview('ner_es')">Named Entities (Spanish)</button>
+          <button class="csv-btn" onclick="highlightCSV(this); loadPreview('final_en')">Final Prediction (English)</button>
+          <button class="csv-btn" onclick="highlightCSV(this); loadPreview('final_es')">Final Prediction (Spanish)</button>
+        <h3 style="margin-top:20px;">Evaluation</h3>
+        <button onclick="loadEvaluation()">Show Evaluation</button>
+      </aside>
+      <section class="content">
+        <h3>Preview Output</h3>
+        <div id="previewContainer">
+          <table id="previewTable" class="preview-table"></table>
+          <pre id="evalBox" class="eval-box">please select a file to preview</pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+let pollHandle = null;
+
+function setButtons(running) {
+  document.getElementById('startBtn').disabled = running;
+  document.getElementById('stopBtn').disabled = !running;
+}
+
+function startPipeline() {
+  fetch('/start', {method:'POST'})
+    .then(r => r.json())
+    .then(d => {
+      if (d.status === 'started') {
+        setButtons(true);
+        if (!pollHandle) {
+          pollHandle = setInterval(fetchProgress, 1000);
+        }
+      } else {
+        alert('Pipeline already running');
+      }
+    });
+}
+
+function stopPipeline() {
+  fetch('/stop', {method:'POST'})
+    .then(r => r.json())
+    .then(d => {
+      if (d.status === 'stopping') {
+        document.getElementById('statusText').innerText = 'Status: Stopping...';
+      } else {
+        alert('Pipeline is not running');
+      }
+    });
+}
+
+function fetchProgress() {
+  fetch('/progress')
+    .then(r => r.json())
+    .then(d => {
+      const pct = d.progress || 0;
+      const status = d.status || 'Idle';
+
+      // update progress bar
+      const bar = document.getElementById('progressFill');
+      bar.style.width = pct + '%';
+      bar.innerText = pct + '%';
+
+      // update status text
+      document.getElementById('statusText').innerText = 'Status: ' + status;
+
+      // update counters
+      document.getElementById('counterBox').innerText =
+        `EN: ${d.count_en}/${d.total_en} | ES: ${d.count_es}/${d.total_es}`;
+
+      setButtons(d.running);
+
+      if (!d.running && pollHandle) {
+        clearInterval(pollHandle);
+        pollHandle = null;
+      }
+    });
+}
+
+function clearPreview() {
+  document.getElementById('previewTable').innerHTML = '';
+  document.getElementById('evalBox').innerText = '';
+}
+
+function renderTable(rows) {
+  clearPreview();
+  const table = document.getElementById('previewTable');
+  if (!rows || !rows.length) {
+    table.innerHTML = '<tr><td>No data</td></tr>';
+    return;
+  }
+  const keys = Object.keys(rows[0]);
+
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  keys.forEach(k => {
+    const th = document.createElement('th');
+    th.innerText = k;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  rows.forEach(row => {
+    const tr = document.createElement('tr');
+    keys.forEach(k => {
+      const td = document.createElement('td');
+      let val = row[k];
+      if (typeof val === 'object') {
+        val = JSON.stringify(val);
+      }
+      td.innerText = String(val);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+}
+
+function loadPreview(step) {
+  clearPreview();
+  fetch('/view/' + step)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById('evalBox').innerText = 'File is not ready yet.';
+        return;
+      }
+      renderTable(data);
+    })
+    .catch(err => console.error(err));
+}
+
+function loadEvaluation() {
+  clearPreview();
+  fetch('/evaluation')
+    .then(r => r.json())
+    .then(data => {
+      const box = document.getElementById('evalBox');
+      if (data.error) {
+        box.innerText = "Evaluation not ready yet.";
+        return;
+      }
+
+      // Render English metrics
+      let enRows = "";
+      for (const [label, m] of Object.entries(data.english.metrics)) {
+        if (label === "accuracy") continue;
+        enRows += `
+          <tr>
+            <td>${label}</td>
+            <td>${m.precision?.toFixed(2)}</td>
+            <td>${m.recall?.toFixed(2)}</td>
+            <td>${m["f1-score"]?.toFixed(2)}</td>
+            <td>${m.support}</td>
+          </tr>`;
+      }
+
+      // Render Spanish metrics
+      let esRows = "";
+      for (const [label, m] of Object.entries(data.spanish.metrics)) {
+        if (label === "accuracy") continue;
+        esRows += `
+          <tr>
+            <td>${label}</td>
+            <td>${m.precision?.toFixed(2)}</td>
+            <td>${m.recall?.toFixed(2)}</td>
+            <td>${m["f1-score"]?.toFixed(2)}</td>
+            <td>${m.support}</td>
+          </tr>`;
+      }
+
+      box.innerHTML = `
+      <div class="eval-card">
+        <h2>English Sentiment Evaluation</h2>
+        <p><strong>Accuracy:</strong> ${(data.english.accuracy * 100).toFixed(2)}%</p>
+
+        <table class="eval-table">
+          <tr>
+            <th>Class</th>
+            <th>Precision</th>
+            <th>Recall</th>
+            <th>F1-score</th>
+            <th>Support</th>
+          </tr>
+          ${enRows}
+        </table>
+
+        <pre class="eval-report">${data.english.report}</pre>
+      </div>
+
+      <div class="eval-card">
+        <h2>Spanish Sentiment Evaluation</h2>
+        <p><strong>Accuracy:</strong> ${(data.spanish.accuracy * 100).toFixed(2)}%</p>
+
+        <table class="eval-table">
+          <tr>
+            <th>Class</th>
+            <th>Precision</th>
+            <th>Recall</th>
+            <th>F1-score</th>
+            <th>Support</th>
+          </tr>
+          ${esRows}
+        </table>
+
+        <pre class="eval-report">${data.spanish.report}</pre>
+      </div>
+      `;
+    });
+}
+
+
+function highlightCSV(button) {
+    // Remove highlight from all
+    document.querySelectorAll(".csv-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    // Highlight clicked one
+    button.classList.add("active");
+}
+
+// initial fetch
+fetchProgress();
+</script>
+</body>
+</html>

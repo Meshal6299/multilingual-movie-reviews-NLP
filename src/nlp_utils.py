@@ -132,3 +132,30 @@ def predict_sentiment(model, vectorizer, text: str):
     """Predicts sentiment label for a single text input."""
     x = vectorizer.transform([text])
     return model.predict(x)[0]
+
+
+# =====================================================
+# 📊 CLASSIFIER EVALUATION
+# =====================================================
+def evaluate_classifier(model, vectorizer, texts, labels):
+    """
+    Evaluates the trained sentiment classifier using TF-IDF features.
+    Returns:
+        - classification report (string)
+        - accuracy (float)
+    """
+    # Transform all texts using the fitted vectorizer
+    X_vec = vectorizer.transform(texts)
+
+    # Predict all labels
+    predictions = model.predict(X_vec)
+
+    # Generate full classification report
+    report_str = classification_report(labels, predictions, output_dict=False)
+
+    # Dict version to extract accuracy
+    report_dict = classification_report(labels, predictions, output_dict=True)
+    accuracy = report_dict.get("accuracy", 0.0)
+
+    return report_str, accuracy
+
