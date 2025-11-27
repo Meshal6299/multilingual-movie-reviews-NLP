@@ -5,6 +5,12 @@ This project builds an end-to-end **Natural Language Processing (NLP) pipeline**
 - POS Tagging & Parsing  
 - Named Entity Recognition (NER)  
 - Sentiment Analysis (Positive/Negative Classification)
+- Interactive Web Dashboard (Flask UI)
+- Visualize each pipeline step
+→ Preview CSV outputs
+→ Live progress bar
+→ Stop pipeline any time
+→ View evaluation metrics
 
 The project is modular, fully reproducible, and runs on a small sampled dataset (20K reviews total).
 
@@ -97,12 +103,12 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4️⃣ Run the Full NLP Pipeline  
+### 4️⃣ Run the Web App 
 ```bash
-python run_pipeline.py
+python webapp/app.py
 ```
 
-**This will automatically:**
+**This will automatically open a browser and you can Start the Pipeline. it'll include the following steps**
 1. Clean and normalize raw data 
 2. Tokenize English & Spanish reviews
 3. Build N-gram models and calculate perplexity
